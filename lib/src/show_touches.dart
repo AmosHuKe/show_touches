@@ -1,12 +1,29 @@
 import 'package:flutter/widgets.dart';
 
+import 'default_config/default_builder.dart';
+
+typedef TouchBuilder = Widget Function(
+  BuildContext context,
+  int pointerId,
+  Offset position,
+  Animation<double> animation,
+);
+
 class ShowTouches extends StatefulWidget {
   const ShowTouches({
     super.key,
     required this.child,
+    this.builder,
+    this.showDuration = const Duration(milliseconds: 200),
+    this.hideDuration = const Duration(milliseconds: 200),
   });
 
   final Widget child;
+
+  final TouchBuilder? builder;
+
+  final Duration showDuration;
+  final Duration hideDuration;
 
   @override
   State<ShowTouches> createState() => _ShowTouchesState();
@@ -14,49 +31,67 @@ class ShowTouches extends StatefulWidget {
 
 class _ShowTouchesState extends State<ShowTouches>
     with TickerProviderStateMixin {
-  final Map<int, TouchPosition> _overlayEntry = {};
+  final Map<int, TouchData> _touchData = {};
+
+  @override
+  void dispose() {
+    _touchData.forEach((_, touchData) => _dispose(touchData.pointerId));
+    super.dispose();
+  }
+
+  void _dispose(int pointerId) {
+    final TouchData? touchState = _touchData[pointerId];
+    touchState?.animationController.dispose();
+    touchState?.positionState.dispose();
+    touchState?.overlayEntry
+      ?..remove()
+      ..dispose();
+    _touchData.remove(pointerId);
+  }
 
   void _addTouchOverlay(int pointerId, Offset position) {
-    if (_overlayEntry.containsKey(pointerId)) return;
+    if (_touchData.containsKey(pointerId)) return;
 
     final AnimationController animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 1000),
+      lowerBound: 0.0,
+      upperBound: 1.0,
+      duration: widget.showDuration,
+      reverseDuration: widget.hideDuration,
     )..forward();
 
-    final positionNotifier = ValueNotifier<Offset>(position);
+    final positionState = ValueNotifier<Offset>(position);
 
     final overlayEntry = OverlayEntry(
       builder: (context) {
         return ValueListenableBuilder<Offset>(
-          valueListenable: positionNotifier,
-          builder: (context, currentPosition, child) {
-            return Positioned(
-              left: positionNotifier.value.dx - 30,
-              top: positionNotifier.value.dy - 30,
-              child: IgnorePointer(
-                ignoring: true,
-                child: FadeTransition(
-                  opacity: animationController,
-                  child: Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(width: 2),
-                    ),
-                  ),
-                ),
-              ),
-            );
+          valueListenable: positionState,
+          builder: (
+            BuildContext context,
+            Offset currentPosition,
+            Widget? child,
+          ) {
+            if (widget.builder != null) {
+              return widget.builder!(
+                context,
+                pointerId,
+                currentPosition,
+                animationController,
+              );
+            } else {
+              return DefaultBuilder(
+                position: currentPosition,
+                animation: animationController,
+              );
+            }
           },
         );
       },
     );
 
-    _overlayEntry[pointerId] = TouchPosition(
+    _touchData[pointerId] = TouchData(
       pointerId: pointerId,
-      positionNotifier: positionNotifier,
+      positionState: positionState,
       animationController: animationController,
       overlayEntry: overlayEntry,
     );
@@ -65,19 +100,19 @@ class _ShowTouchesState extends State<ShowTouches>
   }
 
   void _updateTouchOverlay(int pointerId, Offset position) {
-    if (_overlayEntry.containsKey(pointerId)) {
-      _overlayEntry[pointerId]!.positionNotifier.value = position;
+    if (_touchData.containsKey(pointerId)) {
+      _touchData[pointerId]?.positionState.value = position;
     }
   }
 
-  void _removeTouchOverlay(int pointerId) {
-    final overlayEntry = _overlayEntry[pointerId];
-    if (overlayEntry != null) {
-      overlayEntry.animationController.reverse().then((_) {
-        overlayEntry.overlayEntry?.remove();
-        overlayEntry.animationController.dispose();
-        overlayEntry.positionNotifier.dispose();
-        _overlayEntry.remove(pointerId);
+  void _removeTouchOverlay(int pointerId, Offset position) {
+    final TouchData? touchState = _touchData[pointerId];
+    if (touchState != null) {
+      final animationController = touchState.animationController;
+      animationController.forward().whenCompleteOrCancel(() {
+        animationController.reverse().whenCompleteOrCancel(() {
+          _dispose(pointerId);
+        });
       });
     }
   }
@@ -86,16 +121,16 @@ class _ShowTouchesState extends State<ShowTouches>
   Widget build(BuildContext context) {
     return Listener(
       onPointerDown: (event) {
-        _addTouchOverlay(event.pointer, event.localPosition);
+        _addTouchOverlay(event.pointer, event.position);
       },
       onPointerMove: (event) {
-        _updateTouchOverlay(event.pointer, event.localPosition);
+        _updateTouchOverlay(event.pointer, event.position);
       },
       onPointerUp: (event) {
-        _removeTouchOverlay(event.pointer);
+        _removeTouchOverlay(event.pointer, event.position);
       },
       onPointerCancel: (event) {
-        _removeTouchOverlay(event.pointer);
+        _removeTouchOverlay(event.pointer, event.position);
       },
       behavior: HitTestBehavior.translucent,
       child: widget.child,
@@ -103,45 +138,16 @@ class _ShowTouchesState extends State<ShowTouches>
   }
 }
 
-class TouchPosition {
-  const TouchPosition({
+class TouchData {
+  const TouchData({
     required this.pointerId,
-    required this.positionNotifier,
+    required this.positionState,
     required this.animationController,
     this.overlayEntry,
   });
 
   final int pointerId;
-
-  final ValueNotifier<Offset> positionNotifier;
-
+  final ValueNotifier<Offset> positionState;
   final AnimationController animationController;
-
   final OverlayEntry? overlayEntry;
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) {
-      return true;
-    }
-    if (other.runtimeType != runtimeType) {
-      return false;
-    }
-    return other is TouchPosition &&
-        other.pointerId == pointerId &&
-        other.positionNotifier.value == positionNotifier.value &&
-        other.animationController.toString() ==
-            animationController.toString() &&
-        other.overlayEntry.toString() == overlayEntry.toString();
-  }
-
-  @override
-  int get hashCode {
-    return Object.hashAll([
-      pointerId,
-      positionNotifier.value,
-      animationController.toString(),
-      overlayEntry.toString(),
-    ]);
-  }
 }
