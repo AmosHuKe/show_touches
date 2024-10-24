@@ -14,7 +14,7 @@ class ShowTouches extends StatefulWidget {
     super.key,
     required this.child,
     this.builder,
-    this.showDuration = const Duration(milliseconds: 200),
+    this.showDuration = const Duration(milliseconds: 50),
     this.hideDuration = const Duration(milliseconds: 200),
   });
 
