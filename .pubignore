@@ -8,6 +8,9 @@
 .buildlog/
 .history
 .svn/
+*.lock
+.env
+_config.yml
 
 # IntelliJ related
 *.iml
@@ -74,9 +77,10 @@ coverage/
 !**/ios/**/default.pbxuser
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
-*.lock
-.env
 
 # FVM
 .fvm/
 .fvmrc
+
+# Github
+.github/

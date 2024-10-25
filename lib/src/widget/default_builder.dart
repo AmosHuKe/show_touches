@@ -33,9 +33,12 @@ class DefaultBuilder extends StatelessWidget {
                 width: touchSize.width,
                 height: touchSize.height,
                 decoration: BoxDecoration(
-                  color: Color(0xFF525252),
+                  color: const Color(0xFF525252),
                   shape: BoxShape.circle,
-                  border: Border.all(width: 1.5, color: Color(0xFFFFFFFF)),
+                  border: Border.all(
+                    width: 1.5,
+                    color: const Color(0xFFFFFFFF),
+                  ),
                 ),
               ),
             ),
