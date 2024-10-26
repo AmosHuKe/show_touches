@@ -7,15 +7,21 @@ import 'widget/default_pointer_builder.dart';
 /// |
 /// 指针 Builder
 ///
+/// {@template showTouches.PointerBuilder}
+///
+/// - [context]   : [BuildContext]
 /// - [pointerId] : Pointer (touch) ID.
 /// - [position]  : Current touch position.
 /// - [animation] : Animation to show and remove.
 ///
 /// ------
 ///
+/// - [context]   : [BuildContext]
 /// - [pointerId] : 指针（触摸）ID。
 /// - [position]  : 当前触摸位置。
 /// - [animation] : 显示和移除的动画。
+///
+/// {@endtemplate}
 typedef PointerBuilder = Widget Function(
   BuildContext context,
   int pointerId,
@@ -248,8 +254,11 @@ class ShowTouchesController {
   /// |
   /// dispose 所有指针
   void dispose() {
-    _pointerData.forEach(
-      (_, pointerData) => disposePointer(pointerData.pointerId),
+    final pointerData = List<MapEntry<int, PointerData>>.from(
+      _pointerData.entries,
     );
+    for (final MapEntry<int, PointerData> data in pointerData) {
+      disposePointer(data.value.pointerId);
+    }
   }
 }

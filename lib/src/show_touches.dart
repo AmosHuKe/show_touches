@@ -57,6 +57,8 @@ class ShowTouches extends StatefulWidget {
   /// ------
   ///
   /// 自定义指针 Widget，但会导致 [defaultPointerStyle] 失效。
+  ///
+  /// {@macro showTouches.PointerBuilder}
   final PointerBuilder? pointerBuilder;
 
   /// Default style for the pointer widget when [pointerBuilder] is not used.

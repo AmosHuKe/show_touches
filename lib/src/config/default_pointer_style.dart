@@ -19,6 +19,20 @@ class DefaultPointerStyle {
   final Color backgroundColor;
   final BoxBorder? border;
 
+  DefaultPointerStyle copyWith({
+    double? size,
+    double? opacity,
+    Color? backgroundColor,
+    BoxBorder? border,
+  }) {
+    return DefaultPointerStyle(
+      size: size ?? this.size,
+      opacity: opacity ?? this.opacity,
+      backgroundColor: backgroundColor ?? this.backgroundColor,
+      border: border ?? this.border,
+    );
+  }
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {
