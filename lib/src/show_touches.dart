@@ -9,6 +9,7 @@ class ShowTouches extends StatefulWidget {
   /// |
   /// 显示触摸操作
   ///
+  /// - [enable]              : true (enable) | false (disable)
   /// - [controller]          : [ShowTouchesController] to control the pointer.
   /// - [pointerBuilder]      : Custom pointer widget, but it will cause the [defaultPointerStyle] to be invalid.
   /// - [defaultPointerStyle] : Default style for the pointer widget when [pointerBuilder] is not used.
@@ -17,6 +18,7 @@ class ShowTouches extends StatefulWidget {
   ///
   /// ------
   ///
+  /// - [enable]              : true（启用）| false（禁用）
   /// - [controller]          : 通过 [ShowTouchesController] 来控制指针。
   /// - [pointerBuilder]      : 自定义指针 Widget，但会导致 [defaultPointerStyle] 失效。
   /// - [defaultPointerStyle] : 默认的指针 Widget 样式（在没有指定 [pointerBuilder] 的时候）。
@@ -26,6 +28,7 @@ class ShowTouches extends StatefulWidget {
   const ShowTouches({
     super.key,
     required this.child,
+    this.enable = true,
     this.controller,
     this.pointerBuilder,
     this.defaultPointerStyle = const DefaultPointerStyle(),
@@ -34,6 +37,13 @@ class ShowTouches extends StatefulWidget {
   });
 
   final Widget child;
+
+  /// true (enable) | false (disable)
+  ///
+  /// ------
+  ///
+  /// true（启用）| false（禁用）
+  final bool enable;
 
   /// [ShowTouchesController] to control the pointer.
   ///
@@ -119,6 +129,7 @@ class _ShowTouchesState extends State<ShowTouches>
 
   @override
   Widget build(BuildContext context) {
+    if (!widget.enable) return widget.child;
     return Listener(
       onPointerDown: (event) => _addPointer(event.pointer, event.position),
       onPointerMove: (event) => _updatePointer(event.pointer, event.position),
