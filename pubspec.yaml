@@ -1,5 +1,5 @@
 name: show_touches
-description: "A new Flutter package project."
+description: "Show finger touch effects for Flutter, with support for multiple fingers, controllers, custom widgets, and animations."
 version: 0.0.1
 homepage:
 

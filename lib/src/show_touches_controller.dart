@@ -1,26 +1,79 @@
 import 'package:flutter/widgets.dart';
 
-import 'widget/default_builder.dart';
+import 'config/default_pointer_style.dart';
+import 'widget/default_pointer_builder.dart';
 
-typedef TouchBuilder = Widget Function(
+/// Pointer Builder
+/// |
+/// 指针 Builder
+///
+/// - [pointerId] : Pointer (touch) ID.
+/// - [position]  : Current touch position.
+/// - [animation] : Animation to show and remove.
+///
+/// ------
+///
+/// - [pointerId] : 指针（触摸）ID。
+/// - [position]  : 当前触摸位置。
+/// - [animation] : 显示和移除的动画。
+typedef PointerBuilder = Widget Function(
   BuildContext context,
   int pointerId,
   Offset position,
   Animation<double> animation,
 );
 
-class TouchData {
-  const TouchData({
+/// PointerData
+class PointerData {
+  /// PointerData
+  /// |
+  /// 指针数据
+  ///
+  /// - [pointerId]           : Pointer (touch) ID.
+  /// - [positionState]       : Current touch position.
+  /// - [animationController] : Animation controller.
+  /// - [pointerOverlayEntry] : Pointer [OverlayEntry].
+  ///
+  /// ------
+  ///
+  /// - [pointerId]           : 指针（触摸）ID。
+  /// - [positionState]       : 当前触摸位置。
+  /// - [animationController] : 动画控制器。
+  /// - [pointerOverlayEntry] : 指针 [OverlayEntry]。
+  const PointerData({
     required this.pointerId,
     required this.positionState,
     required this.animationController,
-    this.overlayEntry,
+    this.pointerOverlayEntry,
   });
 
+  /// Pointer (touch) ID.
+  ///
+  /// ------
+  ///
+  /// 指针（触摸）ID。
   final int pointerId;
+
+  /// Current touch position.
+  ///
+  /// ------
+  ///
+  /// 当前触摸位置。
   final ValueNotifier<Offset> positionState;
+
+  /// Animation controller.
+  ///
+  /// ------
+  ///
+  /// 动画控制器。
   final AnimationController animationController;
-  final OverlayEntry? overlayEntry;
+
+  /// Pointer [OverlayEntry].
+  ///
+  /// ------
+  ///
+  /// 指针 OverlayEntry。
+  final OverlayEntry? pointerOverlayEntry;
 
   @override
   bool operator ==(Object other) {
@@ -30,11 +83,11 @@ class TouchData {
     if (other.runtimeType != runtimeType) {
       return false;
     }
-    return other is TouchData &&
+    return other is PointerData &&
         other.pointerId == pointerId &&
         other.positionState.hashCode == positionState.hashCode &&
         other.animationController.hashCode == animationController.hashCode &&
-        other.overlayEntry.hashCode == overlayEntry.hashCode;
+        other.pointerOverlayEntry.hashCode == pointerOverlayEntry.hashCode;
   }
 
   @override
@@ -43,29 +96,55 @@ class TouchData {
       pointerId,
       positionState,
       animationController,
-      overlayEntry,
+      pointerOverlayEntry,
     ]);
   }
 }
 
 class ShowTouchesController {
-  final Map<int, TouchData> _touchData = {};
+  /// All pointer data
+  final Map<int, PointerData> _pointerData = {};
 
-  Map<int, TouchData> get data => _touchData;
+  /// All pointer data
+  /// |
+  /// 所有指针数据
+  ///
+  /// ```dart
+  /// Map<pointerId, PointerData>
+  /// ```
+  Map<int, PointerData> get data => _pointerData;
 
-  void addTouchOverlay({
+  /// Add Pointer
+  /// |
+  /// 添加指针
+  ///
+  /// - [pointerId]           : Pointer (touch) ID.
+  /// - [position]            : Current touch position.
+  /// - [animationController] : Animation controller.
+  /// - [pointerBuilder]      : Custom pointer widget, but it will cause the [defaultPointerStyle] to be invalid.
+  /// - [defaultPointerStyle] : Default style for the pointer widget when [pointerBuilder] is not used.
+  ///
+  /// ------
+  ///
+  /// - [pointerId]           : 指针（触摸）ID。
+  /// - [position]            : 当前触摸位置。
+  /// - [animationController] : 动画控制器。
+  /// - [pointerBuilder]      : 自定义指针 Widget，但会导致 [defaultPointerStyle] 失效。
+  /// - [defaultPointerStyle] : 默认的指针 Widget 样式（在没有指定 [pointerBuilder] 的时候）。
+  void addPointer({
     required BuildContext context,
     required int pointerId,
     required Offset position,
     required AnimationController animationController,
-    TouchBuilder? builder,
+    PointerBuilder? pointerBuilder,
+    DefaultPointerStyle defaultPointerStyle = const DefaultPointerStyle(),
   }) {
-    if (_touchData.containsKey(pointerId)) return;
+    if (_pointerData.containsKey(pointerId)) return;
 
     animationController.forward();
     final ValueNotifier<Offset> positionState = ValueNotifier<Offset>(position);
 
-    final overlayEntry = OverlayEntry(
+    final pointerOverlayEntry = OverlayEntry(
       builder: (context) {
         return ValueListenableBuilder<Offset>(
           valueListenable: positionState,
@@ -74,17 +153,18 @@ class ShowTouchesController {
             Offset currentPosition,
             Widget? child,
           ) {
-            if (builder != null) {
-              return builder(
+            if (pointerBuilder != null) {
+              return pointerBuilder(
                 context,
                 pointerId,
                 currentPosition,
                 animationController,
               );
             } else {
-              return DefaultBuilder(
+              return DefaultPointerBuilder(
                 position: currentPosition,
                 animation: animationController,
+                defaultPointerStyle: defaultPointerStyle,
               );
             }
           },
@@ -92,50 +172,84 @@ class ShowTouchesController {
       },
     );
 
-    _touchData[pointerId] = TouchData(
+    _pointerData[pointerId] = PointerData(
       pointerId: pointerId,
       positionState: positionState,
       animationController: animationController,
-      overlayEntry: overlayEntry,
+      pointerOverlayEntry: pointerOverlayEntry,
     );
 
-    Overlay.of(context).insert(overlayEntry);
+    Overlay.of(context).insert(pointerOverlayEntry);
   }
 
-  void updateTouchOverlay({required int pointerId, required Offset position}) {
-    if (!_touchData.containsKey(pointerId)) return;
-    _touchData[pointerId]?.positionState.value = position;
+  /// Update Pointer
+  /// |
+  /// 更新指针
+  ///
+  /// - [pointerId] : Pointer (touch) ID.
+  /// - [position]  : Current touch position.
+  ///
+  /// ------
+  ///
+  /// - [pointerId] : 指针（触摸）ID。
+  /// - [position]  : 当前触摸位置。
+  void updatePointer({required int pointerId, required Offset position}) {
+    if (!_pointerData.containsKey(pointerId)) return;
+    _pointerData[pointerId]?.positionState.value = position;
   }
 
-  void removeTouchOverlay({required int pointerId}) {
-    final TouchData? touchData = _touchData[pointerId];
-    _touchData.remove(pointerId);
-    if (touchData != null) {
-      final animationController = touchData.animationController;
+  /// Remove Pointer
+  /// |
+  /// 移除指针
+  ///
+  /// - [pointerId] : Pointer (touch) ID.
+  ///
+  /// ------
+  ///
+  /// - [pointerId] : 指针（触摸）ID。
+  void removePointer({required int pointerId}) {
+    final PointerData? pointerData = _pointerData[pointerId];
+    _pointerData.remove(pointerId);
+    if (pointerData != null) {
+      final animationController = pointerData.animationController;
       animationController.forward().whenCompleteOrCancel(() {
         animationController.reverse().whenCompleteOrCancel(() {
-          touchData.animationController.dispose();
-          touchData.positionState.dispose();
-          touchData.overlayEntry
+          pointerData.animationController.dispose();
+          pointerData.positionState.dispose();
+          pointerData.pointerOverlayEntry
             ?..remove()
             ..dispose();
-          _touchData.remove(pointerId);
+          _pointerData.remove(pointerId);
         });
       });
     }
   }
 
-  void disposeTouch(int pointerId) {
-    final TouchData? touchData = _touchData[pointerId];
-    touchData?.animationController.dispose();
-    touchData?.positionState.dispose();
-    touchData?.overlayEntry
+  /// Dispose Pointer
+  /// |
+  /// dispose 指针
+  ///
+  /// - [pointerId] : Pointer (touch) ID.
+  ///
+  /// ------
+  ///
+  /// - [pointerId] : 指针（触摸）ID。
+  void disposePointer(int pointerId) {
+    final PointerData? pointerData = _pointerData[pointerId];
+    pointerData?.animationController.dispose();
+    pointerData?.positionState.dispose();
+    pointerData?.pointerOverlayEntry
       ?..remove()
       ..dispose();
-    _touchData.remove(pointerId);
+    _pointerData.remove(pointerId);
   }
 
+  /// Dispose all pointers
+  /// |
+  /// dispose 所有指针
   void dispose() {
-    _touchData.forEach((_, touchData) => disposeTouch(touchData.pointerId));
+    _pointerData.forEach(
+      (_, pointerData) => disposePointer(pointerData.pointerId),
+    );
   }
 }
