@@ -4,6 +4,7 @@ import 'package:show_touches/show_touches.dart';
 class ShowTouchesWidget extends StatelessWidget {
   const ShowTouchesWidget({
     super.key,
+    this.builder,
     this.enable = true,
     this.controller,
     this.pointerBuilder,
@@ -12,6 +13,7 @@ class ShowTouchesWidget extends StatelessWidget {
     this.removeDuration = const Duration(milliseconds: 200),
   });
 
+  final TransitionBuilder? builder;
   final bool enable;
   final ShowTouchesController? controller;
   final PointerBuilder? pointerBuilder;
@@ -22,21 +24,22 @@ class ShowTouchesWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: ShowTouches(
+      builder: ShowTouches.init(
         key: const Key('show_touches_widget'),
+        builder: builder,
         enable: enable,
         controller: controller,
         pointerBuilder: pointerBuilder,
         defaultPointerStyle: defaultPointerStyle,
         showDuration: showDuration,
         removeDuration: removeDuration,
-        child: const Scaffold(
-          key: Key('show_touches_scaffold'),
-          body: SizedBox(
-            width: 100,
-            height: 100,
-            child: Text('ShowTouches'),
-          ),
+      ),
+      home: const Scaffold(
+        key: Key('show_touches_scaffold'),
+        body: SizedBox(
+          width: 100,
+          height: 100,
+          child: Text('ShowTouches'),
         ),
       ),
     );

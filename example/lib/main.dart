@@ -17,9 +17,8 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const ShowTouches(
-        child: MyHomePage(title: 'Flutter Show Touches Demo'),
-      ),
+      builder: ShowTouches.init(),
+      home: const MyHomePage(title: 'Flutter Show Touches Demo'),
     );
   }
 }

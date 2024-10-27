@@ -185,7 +185,8 @@ class ShowTouchesController {
       pointerOverlayEntry: pointerOverlayEntry,
     );
 
-    Overlay.of(context).insert(pointerOverlayEntry);
+    // ignore: invalid_null_aware_operator | Flutter >= 3.3.0
+    Overlay.of(context)?.insert(pointerOverlayEntry);
   }
 
   /// Update Pointer

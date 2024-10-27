@@ -9,6 +9,8 @@ class ShowTouches extends StatefulWidget {
   /// |
   /// 显示触摸操作
   ///
+  /// {@template showTouches.widget}
+  ///
   /// - [enable]              : true (enable) | false (disable)
   /// - [controller]          : [ShowTouchesController] to control the pointer.
   /// - [pointerBuilder]      : Custom pointer widget, but it will cause the [defaultPointerStyle] to be invalid.
@@ -25,9 +27,10 @@ class ShowTouches extends StatefulWidget {
   /// - [showDuration]        : 显示动画的持续时间（指针）。
   /// - [removeDuration]      : 移除动画的持续时间（指针）。
   ///
+  /// {@endtemplate}
   const ShowTouches({
     super.key,
-    required this.child,
+    this.child,
     this.enable = true,
     this.controller,
     this.pointerBuilder,
@@ -36,7 +39,7 @@ class ShowTouches extends StatefulWidget {
     this.removeDuration = const Duration(milliseconds: 200),
   });
 
-  final Widget child;
+  final Widget? child;
 
   /// true (enable) | false (disable)
   ///
@@ -82,6 +85,33 @@ class ShowTouches extends StatefulWidget {
   /// 移除动画的持续时间（指针）。
   final Duration removeDuration;
 
+  /// Init
+  /// {@macro showTouches.widget}
+  static TransitionBuilder init({
+    Key? key,
+    TransitionBuilder? builder,
+    bool enable = true,
+    ShowTouchesController? controller,
+    PointerBuilder? pointerBuilder,
+    DefaultPointerStyle defaultPointerStyle = const DefaultPointerStyle(),
+    Duration showDuration = const Duration(milliseconds: 50),
+    Duration removeDuration = const Duration(milliseconds: 200),
+  }) {
+    return (BuildContext context, Widget? child) {
+      final Widget showTouches = ShowTouches(
+        key: key,
+        enable: enable,
+        controller: controller,
+        pointerBuilder: pointerBuilder,
+        defaultPointerStyle: defaultPointerStyle,
+        showDuration: showDuration,
+        removeDuration: removeDuration,
+        child: child,
+      );
+      return builder == null ? showTouches : builder(context, showTouches);
+    };
+  }
+
   @override
   State<ShowTouches> createState() => _ShowTouchesState();
 }
@@ -102,7 +132,7 @@ class _ShowTouchesState extends State<ShowTouches>
     super.dispose();
   }
 
-  void _addPointer(int pointerId, Offset position) {
+  void _addPointer(BuildContext context, int pointerId, Offset position) {
     final animationController = AnimationController(
       vsync: this,
       lowerBound: 0.0,
@@ -131,14 +161,24 @@ class _ShowTouchesState extends State<ShowTouches>
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.enable) return widget.child;
-    return Listener(
-      onPointerDown: (event) => _addPointer(event.pointer, event.position),
-      onPointerMove: (event) => _updatePointer(event.pointer, event.position),
-      onPointerUp: (event) => _removePointer(event.pointer),
-      onPointerCancel: (event) => _removePointer(event.pointer),
-      behavior: HitTestBehavior.translucent,
-      child: widget.child,
+    if (!widget.enable) return widget.child ?? const SizedBox();
+    return Overlay(
+      initialEntries: [
+        OverlayEntry(
+          builder: (BuildContext context) {
+            return Listener(
+              onPointerDown: (event) =>
+                  _addPointer(context, event.pointer, event.position),
+              onPointerMove: (event) =>
+                  _updatePointer(event.pointer, event.position),
+              onPointerUp: (event) => _removePointer(event.pointer),
+              onPointerCancel: (event) => _removePointer(event.pointer),
+              behavior: HitTestBehavior.translucent,
+              child: widget.child,
+            );
+          },
+        ),
+      ],
     );
   }
 }

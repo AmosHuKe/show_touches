@@ -161,6 +161,7 @@ void main() {
 
     await tester.pumpWidget(
       ShowTouchesWidget(
+        builder: (context, child) => child ?? const SizedBox(),
         controller: controller,
         pointerBuilder: (context, pointerId, position, animation) {
           return Positioned(
