@@ -23,7 +23,7 @@
 <br/>
 
 <div align="center">
-  <img alt="preview1.gif" src="https://raw.githubusercontent.com/AmosHuKe/show_touches/main/README/preview1.gif" />
+  <img alt="preview1.gif" width="600" src="https://raw.githubusercontent.com/AmosHuKe/show_touches/main/README/preview1.gif" />
 </div>
 
 <br/>
