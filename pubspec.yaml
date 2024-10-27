@@ -22,3 +22,7 @@ topics:
   - widget
   - pointer
   - touch
+
+screenshots:
+  - description: 'Example Preview GIF'
+    path: README/preview1.gif
