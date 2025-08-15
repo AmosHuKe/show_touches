@@ -1,4 +1,4 @@
-# example
+# show_touches_example
 
 A new Flutter project.
 

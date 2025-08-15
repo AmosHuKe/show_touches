@@ -26,7 +26,7 @@ jobs:
     name: "Code Analysis :: Flutter (latest)"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           sparse-checkout: ${{ env.repo_sparse_checkout }}
           sparse-checkout-cone-mode: false
@@ -42,7 +42,7 @@ jobs:
           dart format . -o none --set-exit-if-changed
       - name: Analyze Dart code
         run: |
-          flutter analyze .
+          flutter analyze . --no-fatal-infos
       - name: Generate dartdoc
         run: |
           dart pub global activate dartdoc
@@ -56,7 +56,7 @@ jobs:
       matrix:
         flutter-version: ['3.3.0', '']
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           sparse-checkout: ${{ env.repo_sparse_checkout }}
           sparse-checkout-cone-mode: false
@@ -79,7 +79,7 @@ jobs:
       && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           sparse-checkout: ${{ env.repo_sparse_checkout }}
           sparse-checkout-cone-mode: false

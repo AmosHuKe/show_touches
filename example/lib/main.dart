@@ -15,7 +15,6 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Show Touches Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
       ),
       builder: ShowTouches.init(),
       home: const MyHomePage(title: 'Flutter Show Touches Demo'),
@@ -52,9 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
+            const Text('You have pushed the button this many times:'),
             Text(
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
