@@ -120,26 +120,68 @@ class _ShowTouchesState extends State<ShowTouches>
     with TickerProviderStateMixin {
   late ShowTouchesController controller;
 
+  /// [controller] 是否由本 widget 内部创建（并负责释放）
+  bool _isInternalController = false;
+
+  /// 由本 widget 内置手势添加的指针，
+  /// 其 [AnimationController] 以本 [State] 作为 vsync，
+  /// 必须在 [State] dispose 前清理，避免 active-ticker 泄漏。
+  final Set<int> _ownPointerIds = <int>{};
+
+  /// 本 widget 添加且仍存活的指针 id 集合（仅用于测试）。
+  @visibleForTesting
+  Set<int> get ownPointerIds => _ownPointerIds;
+
   @override
   void initState() {
     super.initState();
-    controller = widget.controller ?? ShowTouchesController();
+    _initController();
+  }
+
+  void _initController() {
+    final ShowTouchesController? external = widget.controller;
+    _isInternalController = external == null;
+    controller = external ?? ShowTouchesController();
+  }
+
+  @override
+  void didUpdateWidget(ShowTouches oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(widget.controller, oldWidget.controller)) {
+      _disposeOwnedPointers();
+      _initController();
+    }
   }
 
   @override
   void dispose() {
-    controller.dispose();
+    _disposeOwnedPointers();
     super.dispose();
   }
 
+  /// 释放本 widget 拥有的指针。
+  /// 仅内部创建的 [controller] 会被完整 dispose，
+  /// 外部传入的 [controller] 保持有效，只移除此处添加的指针。
+  void _disposeOwnedPointers() {
+    if (_isInternalController) {
+      controller.dispose();
+    } else {
+      for (final int pointerId in _ownPointerIds) {
+        controller.disposePointer(pointerId);
+      }
+    }
+    _ownPointerIds.clear();
+  }
+
   void _addPointer(BuildContext context, int pointerId, Offset position) {
-    final animationController = AnimationController(
+    final AnimationController animationController = AnimationController(
       vsync: this,
       lowerBound: 0.0,
       upperBound: 1.0,
       duration: widget.showDuration,
       reverseDuration: widget.removeDuration,
     );
+    _ownPointerIds.add(pointerId);
 
     controller.addPointer(
       context: context,
@@ -156,25 +198,34 @@ class _ShowTouchesState extends State<ShowTouches>
   }
 
   void _removePointer(int pointerId) {
-    controller.removePointer(pointerId: pointerId);
+    controller.removePointer(
+      pointerId: pointerId,
+      onRemoved: () => _ownPointerIds.remove(pointerId),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.enable) return widget.child ?? const SizedBox();
     return Overlay(
       initialEntries: [
         OverlayEntry(
           builder: (BuildContext context) {
+            final Widget child = widget.child ?? const SizedBox();
+            final bool enable = widget.enable;
             return Listener(
-              onPointerDown: (event) =>
-                  _addPointer(context, event.pointer, event.position),
-              onPointerMove: (event) =>
-                  _updatePointer(event.pointer, event.position),
-              onPointerUp: (event) => _removePointer(event.pointer),
-              onPointerCancel: (event) => _removePointer(event.pointer),
+              onPointerDown: enable
+                  ? (event) =>
+                      _addPointer(context, event.pointer, event.position)
+                  : null,
+              onPointerMove: enable
+                  ? (event) => _updatePointer(event.pointer, event.position)
+                  : null,
+              onPointerUp:
+                  enable ? (event) => _removePointer(event.pointer) : null,
+              onPointerCancel:
+                  enable ? (event) => _removePointer(event.pointer) : null,
               behavior: HitTestBehavior.translucent,
-              child: widget.child,
+              child: child,
             );
           },
         ),

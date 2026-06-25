@@ -73,16 +73,16 @@
 ## 安装 🎯
 ### 版本兼容 🐦  
 
-|       Flutter       |  3.3.0+  |  
-|      ---------      | :------: |  
-| show_touches 0.0.1+ |    ✅    |  
+| Flutter             | 3.3.0+ |
+| ------------------- | :----: |
+| show_touches 0.0.1+ |   ✅   |
 
 
 ### 平台兼容 📱  
 
-| Android |  iOS  |  Web  | macOS | Windows | Linux |  
-| :-----: | :---: | :---: | :---: | :-----: | :---: |  
-|   ✅   |   ✅  |  ✅   |  ✅  |   ✅   |  ✅   |  
+| Android | iOS | Web | macOS | Windows | Linux |
+| :-----: | :-: | :-: | :---: | :-----: | :---: |
+|   ✅    | ✅  | ✅  |  ✅   |   ✅    |  ✅   |
 
 
 ### 添加 show_touches 📦  
@@ -129,15 +129,15 @@ ShowTouches(child: XxxPage()),
 ## 使用 📖  
 ### `ShowTouches` widget 参数 🤖  
 
-| 参数名 | 类型 | 默认值 | 描述 |  
-| --- | --- | --- | --- |
-| child <sup>`必选`</sup> | `Widget` | - | - |  
-| enable | `bool` | `true` | true（启用）<br/> false（禁用） |  
-| controller | [ShowTouchesController][]? | `null` | 通过 `ShowTouchesController` 来控制指针。 |  
-| pointerBuilder | [PointerBuilder][]? | `null` | 自定义指针 Widget，但会导致 `defaultPointerStyle` 失效。 |  
-| defaultPointerStyle | `DefaultPointerStyle` | `DefaultPointerStyle()` | 默认的指针 Widget 样式（在没有指定 `pointerBuilder` 的时候）。 |  
-| showDuration | `Duration` | `Duration(milliseconds: 50)` | 显示动画的持续时间（指针）。 |  
-| removeDuration | `Duration` | `Duration(milliseconds: 200)` | 移除动画的持续时间（指针）。 |  
+| 参数名                  | 类型                       | 默认值                        | 描述                                                           |
+| ----------------------- | -------------------------- | ----------------------------- | -------------------------------------------------------------- |
+| child <sup>`必选`</sup> | `Widget`                   | -                             | -                                                              |
+| enable                  | `bool`                     | `true`                        | true（启用）<br/> false（禁用）                                |
+| controller              | [ShowTouchesController][]? | `null`                        | 通过 `ShowTouchesController` 来控制指针。                      |
+| pointerBuilder          | [PointerBuilder][]?        | `null`                        | 自定义指针 Widget，但会导致 `defaultPointerStyle` 失效。       |
+| defaultPointerStyle     | `DefaultPointerStyle`      | `DefaultPointerStyle()`       | 默认的指针 Widget 样式（在没有指定 `pointerBuilder` 的时候）。 |
+| showDuration            | `Duration`                 | `Duration(milliseconds: 50)`  | 显示动画的持续时间（指针）。                                   |
+| removeDuration          | `Duration`                 | `Duration(milliseconds: 200)` | 移除动画的持续时间（指针）。                                   |
 
 
 ### PointerBuilder 📄  
@@ -181,12 +181,12 @@ ShowTouches(
 
 ```
 
-| 参数名 | 类型 | 描述 |  
-| --- | --- | --- |  
-| context | `BuildContext` | - |  
-| pointerId | `int` | 指针（触摸）ID。 |  
-| position | `Offset` | 当前触摸位置。 |  
-| animation | `Animation<double>` | 显示和移除的动画。 |  
+| 参数名    | 类型                | 描述               |
+| --------- | ------------------- | ------------------ |
+| context   | `BuildContext`      | -                  |
+| pointerId | `int`               | 指针（触摸）ID。   |
+| position  | `Offset`            | 当前触摸位置。     |
+| animation | `Animation<double>` | 显示和移除的动画。 |
 
 
 ### ShowTouchesController 📄  
@@ -228,42 +228,43 @@ Listener(
 
 ##### PointerData
 
-| 参数名 | 类型 | 描述 |  
-| --- | --- | --- |  
-| pointerId | `int` | 指针（触摸）ID。 |  
-| positionState | `ValueNotifier<Offset>` | 当前触摸位置。 |  
-| animationController | `AnimationController` | 动画控制器。 |  
-| pointerOverlayEntry | `OverlayEntry?` | 指针 `OverlayEntry`。 |  
+| 参数名              | 类型                    | 描述                  |
+| ------------------- | ----------------------- | --------------------- |
+| pointerId           | `int`                   | 指针（触摸）ID。      |
+| positionState       | `ValueNotifier<Offset>` | 当前触摸位置。        |
+| animationController | `AnimationController`   | 动画控制器。          |
+| pointerOverlayEntry | `OverlayEntry?`         | 指针 `OverlayEntry`。 |
 
 #### addPointer()
 
-| 参数名 | 类型 | 默认值 | 描述 |  
-| --- | --- | --- | --- |
-| context <sup>`必选`</sup> | `BuildContext` | - | - |  
-| pointerId <sup>`必选`</sup> | `int` | - | 指针（触摸）ID。 |  
-| position <sup>`必选`</sup> | `Offset` | - | 当前触摸位置。 |  
-| animationController <sup>`必选`</sup> | `AnimationController` | - | 动画控制器。 |  
-| pointerBuilder | `PointerBuilder?` | `null` | 自定义指针 Widget，但会导致 `defaultPointerStyle` 失效。 |  
-| defaultPointerStyle | `DefaultPointerStyle` | `DefaultPointerStyle()` | 默认的指针 Widget 样式（在没有指定 `pointerBuilder` 的时候）。 |  
+| 参数名                                | 类型                  | 默认值                  | 描述                                                           |
+| ------------------------------------- | --------------------- | ----------------------- | -------------------------------------------------------------- |
+| context <sup>`必选`</sup>             | `BuildContext`        | -                       | -                                                              |
+| pointerId <sup>`必选`</sup>           | `int`                 | -                       | 指针（触摸）ID。                                               |
+| position <sup>`必选`</sup>            | `Offset`              | -                       | 当前触摸位置。                                                 |
+| animationController <sup>`必选`</sup> | `AnimationController` | -                       | 动画控制器。                                                   |
+| pointerBuilder                        | `PointerBuilder?`     | `null`                  | 自定义指针 Widget，但会导致 `defaultPointerStyle` 失效。       |
+| defaultPointerStyle                   | `DefaultPointerStyle` | `DefaultPointerStyle()` | 默认的指针 Widget 样式（在没有指定 `pointerBuilder` 的时候）。 |
 
 #### updatePointer()
 
-| 参数名 | 类型 | 默认值 | 描述 |  
-| --- | --- | --- | --- |
-| pointerId <sup>`必选`</sup> | `int` | - | 指针（触摸）ID。 |  
-| position <sup>`必选`</sup> | `Offset` | - | 当前触摸位置。 |  
+| 参数名                      | 类型     | 默认值 | 描述             |
+| --------------------------- | -------- | ------ | ---------------- |
+| pointerId <sup>`必选`</sup> | `int`    | -      | 指针（触摸）ID。 |
+| position <sup>`必选`</sup>  | `Offset` | -      | 当前触摸位置。   |
 
 #### removePointer()
 
-| 参数名 | 类型 | 默认值 | 描述 |  
-| --- | --- | --- | --- |
-| pointerId <sup>`必选`</sup> | `int` | - | 指针（触摸）ID。 |  
+| 参数名                      | 类型            | 默认值 | 描述                           |
+| --------------------------- | --------------- | ------ | ------------------------------ |
+| pointerId <sup>`必选`</sup> | `int`           | -      | 指针（触摸）ID。               |
+| onRemoved                   | `VoidCallback?` | `null` | 指针（含动画）彻底移除后回调。 |
 
 #### disposePointer()
 
-| 参数名 | 类型 | 默认值 | 描述 |  
-| --- | --- | --- | --- |
-| pointerId <sup>`必选`</sup> | `int` | - | 指针（触摸）ID。 |  
+| 参数名                      | 类型  | 默认值 | 描述             |
+| --------------------------- | ----- | ------ | ---------------- |
+| pointerId <sup>`必选`</sup> | `int` | -      | 指针（触摸）ID。 |
 
 
 ## 贡献者 ✨  

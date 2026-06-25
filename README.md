@@ -73,16 +73,16 @@
 ## Install 🎯
 ### Versions compatibility 🐦  
 
-|       Flutter       |  3.3.0+  |  
-|      ---------      | :------: |  
-| show_touches 0.0.1+ |    ✅    |  
+| Flutter             | 3.3.0+ |
+| ------------------- | :----: |
+| show_touches 0.0.1+ |   ✅   |
 
 
 ### Platforms compatibility 📱  
 
-| Android |  iOS  |  Web  | macOS | Windows | Linux |  
-| :-----: | :---: | :---: | :---: | :-----: | :---: |  
-|   ✅   |   ✅  |  ✅   |  ✅  |   ✅   |  ✅   |  
+| Android | iOS | Web | macOS | Windows | Linux |
+| :-----: | :-: | :-: | :---: | :-----: | :---: |
+|   ✅    | ✅  | ✅  |  ✅   |   ✅    |  ✅   |
 
 
 ### Add package 📦  
@@ -129,15 +129,15 @@ ShowTouches(child: XxxPage()),
 ## Usage 📖  
 ### `ShowTouches` widget parameters 🤖  
 
-| Parameter | Type | Default | Description |  
-| --- | --- | --- | --- |
-| child <sup>`required`</sup> | `Widget` | - | - |  
-| enable | `bool` | `true` | true (enable) <br/> false (disable) |  
-| controller | [ShowTouchesController][]? | `null` | `ShowTouchesController` to control the pointer. |  
-| pointerBuilder | [PointerBuilder][]? | `null` | Custom pointer widget, but it will cause the `defaultPointerStyle` to be invalid. |  
-| defaultPointerStyle | `DefaultPointerStyle` | `DefaultPointerStyle()` | Default style for the pointer widget when `pointerBuilder` is not used. |  
-| showDuration | `Duration` | `Duration(milliseconds: 50)` | Show animation duration (pointer). |  
-| removeDuration | `Duration` | `Duration(milliseconds: 200)` | Remove animation duration (pointer). |  
+| Parameter                   | Type                       | Default                       | Description                                                                       |
+| --------------------------- | -------------------------- | ----------------------------- | --------------------------------------------------------------------------------- |
+| child <sup>`required`</sup> | `Widget`                   | -                             | -                                                                                 |
+| enable                      | `bool`                     | `true`                        | true (enable) <br/> false (disable)                                               |
+| controller                  | [ShowTouchesController][]? | `null`                        | `ShowTouchesController` to control the pointer.                                   |
+| pointerBuilder              | [PointerBuilder][]?        | `null`                        | Custom pointer widget, but it will cause the `defaultPointerStyle` to be invalid. |
+| defaultPointerStyle         | `DefaultPointerStyle`      | `DefaultPointerStyle()`       | Default style for the pointer widget when `pointerBuilder` is not used.           |
+| showDuration                | `Duration`                 | `Duration(milliseconds: 50)`  | Show animation duration (pointer).                                                |
+| removeDuration              | `Duration`                 | `Duration(milliseconds: 200)` | Remove animation duration (pointer).                                              |
 
 
 ### PointerBuilder 📄  
@@ -181,12 +181,12 @@ ShowTouches(
 
 ```
 
-| Parameter | Type | Description |  
-| --- | --- | --- |  
-| context | `BuildContext` | - |  
-| pointerId | `int` | Pointer (touch) ID. |  
-| position | `Offset` | Current touch position. |  
-| animation | `Animation<double>` | Animation controller. |  
+| Parameter | Type                | Description             |
+| --------- | ------------------- | ----------------------- |
+| context   | `BuildContext`      | -                       |
+| pointerId | `int`               | Pointer (touch) ID.     |
+| position  | `Offset`            | Current touch position. |
+| animation | `Animation<double>` | Animation controller.   |
 
 
 ### ShowTouchesController 📄  
@@ -228,42 +228,43 @@ Listener(
 
 ##### PointerData
 
-| Parameter | Type | Description |  
-| --- | --- | --- |  
-| pointerId | `int` | Pointer (touch) ID. |  
-| positionState | `ValueNotifier<Offset>` | Current touch position. |  
-| animationController | `AnimationController` | Animation controller. |  
-| pointerOverlayEntry | `OverlayEntry?` | Pointer `OverlayEntry`. |  
+| Parameter           | Type                    | Description             |
+| ------------------- | ----------------------- | ----------------------- |
+| pointerId           | `int`                   | Pointer (touch) ID.     |
+| positionState       | `ValueNotifier<Offset>` | Current touch position. |
+| animationController | `AnimationController`   | Animation controller.   |
+| pointerOverlayEntry | `OverlayEntry?`         | Pointer `OverlayEntry`. |
 
 #### addPointer()
 
-| Parameter | Type | Default | Description |  
-| --- | --- | --- | --- |
-| context <sup>`required`</sup> | `BuildContext` | - | - |  
-| pointerId <sup>`required`</sup> | `int` | - | Pointer (touch) ID. |  
-| position <sup>`required`</sup> | `Offset` | - | Current touch position. |  
-| animationController <sup>`required`</sup> | `AnimationController` | - | Animation controller. |  
-| pointerBuilder | `PointerBuilder?` | `null` | Custom pointer widget, but it will cause the `defaultPointerStyle` to be invalid. |  
-| defaultPointerStyle | `DefaultPointerStyle` | `DefaultPointerStyle()` | Default style for the pointer widget when `pointerBuilder` is not used. |  
+| Parameter                                 | Type                  | Default                 | Description                                                                       |
+| ----------------------------------------- | --------------------- | ----------------------- | --------------------------------------------------------------------------------- |
+| context <sup>`required`</sup>             | `BuildContext`        | -                       | -                                                                                 |
+| pointerId <sup>`required`</sup>           | `int`                 | -                       | Pointer (touch) ID.                                                               |
+| position <sup>`required`</sup>            | `Offset`              | -                       | Current touch position.                                                           |
+| animationController <sup>`required`</sup> | `AnimationController` | -                       | Animation controller.                                                             |
+| pointerBuilder                            | `PointerBuilder?`     | `null`                  | Custom pointer widget, but it will cause the `defaultPointerStyle` to be invalid. |
+| defaultPointerStyle                       | `DefaultPointerStyle` | `DefaultPointerStyle()` | Default style for the pointer widget when `pointerBuilder` is not used.           |
 
 #### updatePointer()
 
-| Parameter | Type | Default | Description |  
-| --- | --- | --- | --- |
-| pointerId <sup>`required`</sup> | `int` | - | Pointer (touch) ID. |  
-| position <sup>`required`</sup> | `Offset` | - | Current touch position. |  
+| Parameter                       | Type     | Default | Description             |
+| ------------------------------- | -------- | ------- | ----------------------- |
+| pointerId <sup>`required`</sup> | `int`    | -       | Pointer (touch) ID.     |
+| position <sup>`required`</sup>  | `Offset` | -       | Current touch position. |
 
 #### removePointer()
 
-| Parameter | Type | Default | Description |  
-| --- | --- | --- | --- |
-| pointerId <sup>`required`</sup> | `int` | - | Pointer (touch) ID. |  
+| Parameter                       | Type            | Default | Description                                                   |
+| ------------------------------- | --------------- | ------- | ------------------------------------------------------------- |
+| pointerId <sup>`required`</sup> | `int`           | -       | Pointer (touch) ID.                                           |
+| onRemoved                       | `VoidCallback?` | `null`  | Called after the pointer and its animation are fully removed. |
 
 #### disposePointer()
 
-| Parameter | Type | Default | Description |  
-| --- | --- | --- | --- |
-| pointerId <sup>`required`</sup> | `int` | - | Pointer (touch) ID. |  
+| Parameter                       | Type  | Default | Description         |
+| ------------------------------- | ----- | ------- | ------------------- |
+| pointerId <sup>`required`</sup> | `int` | -       | Pointer (touch) ID. |
 
 
 ## Contributors ✨  

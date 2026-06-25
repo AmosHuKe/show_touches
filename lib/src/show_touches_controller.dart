@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/widgets.dart';
 
 import 'config/default_pointer_style.dart';
@@ -91,9 +93,9 @@ class PointerData {
     }
     return other is PointerData &&
         other.pointerId == pointerId &&
-        other.positionState.hashCode == positionState.hashCode &&
-        other.animationController.hashCode == animationController.hashCode &&
-        other.pointerOverlayEntry.hashCode == pointerOverlayEntry.hashCode;
+        identical(other.positionState, positionState) &&
+        identical(other.animationController, animationController) &&
+        identical(other.pointerOverlayEntry, pointerOverlayEntry);
   }
 
   @override
@@ -111,14 +113,31 @@ class ShowTouchesController {
   /// All pointer data
   final Map<int, PointerData> _pointerData = {};
 
-  /// All pointer data
-  /// |
-  /// 所有指针数据
+  /// Pointers currently running their removal animation.
+  ///
+  /// ------
+  ///
+  /// 正在执行移除动画的指针。
+  final Set<int> _removingPointers = <int>{};
+
+  /// Whether [dispose] has been called.
+  ///
+  /// ------
+  ///
+  /// 是否已调用 [dispose]。
+  bool get isDisposed => _isDisposed;
+  bool _isDisposed = false;
+
+  /// All pointer data (read-only)
+  ///
+  /// ------
+  ///
+  /// 所有指针数据（只读）
   ///
   /// ```dart
   /// Map<pointerId, PointerData>
   /// ```
-  Map<int, PointerData> get data => _pointerData;
+  Map<int, PointerData> get data => UnmodifiableMapView(_pointerData);
 
   /// Add Pointer
   /// |
@@ -210,26 +229,32 @@ class ShowTouchesController {
   /// 移除指针
   ///
   /// - [pointerId] : Pointer (touch) ID.
+  /// - [onRemoved] : Called after the pointer and its animation are fully removed.
   ///
   /// ------
   ///
   /// - [pointerId] : 指针（触摸）ID。
-  void removePointer({required int pointerId}) {
+  /// - [onRemoved] : 指针（含动画）彻底移除后回调。
+  void removePointer({required int pointerId, VoidCallback? onRemoved}) {
     final PointerData? pointerData = _pointerData[pointerId];
-    _pointerData.remove(pointerId);
-    if (pointerData != null) {
-      final animationController = pointerData.animationController;
-      animationController.forward().whenCompleteOrCancel(() {
-        animationController.reverse().whenCompleteOrCancel(() {
-          pointerData.animationController.dispose();
-          pointerData.positionState.dispose();
-          pointerData.pointerOverlayEntry
-            ?..remove()
-            ..dispose();
-          _pointerData.remove(pointerId);
-        });
+    if (pointerData == null) return;
+
+    /// 防止重复移除（如抬起后又取消）在同一指针上叠加动画。
+    if (!_removingPointers.add(pointerId)) return;
+
+    final AnimationController animationController =
+        pointerData.animationController;
+    animationController.forward().whenCompleteOrCancel(() {
+      /// 显示动画期间该指针可能已被 dispose，提前返回以避免释放后再使用。
+      if (!_pointerData.containsKey(pointerId)) return;
+      animationController.reverse().whenCompleteOrCancel(() {
+        if (!_pointerData.containsKey(pointerId)) return;
+        _disposePointerData(pointerData);
+        _pointerData.remove(pointerId);
+        _removingPointers.remove(pointerId);
+        onRemoved?.call();
       });
-    }
+    });
   }
 
   /// Dispose Pointer
@@ -242,24 +267,34 @@ class ShowTouchesController {
   ///
   /// - [pointerId] : 指针（触摸）ID。
   void disposePointer(int pointerId) {
-    final PointerData? pointerData = _pointerData[pointerId];
-    pointerData?.animationController.dispose();
-    pointerData?.positionState.dispose();
-    pointerData?.pointerOverlayEntry
-      ?..remove()
-      ..dispose();
-    _pointerData.remove(pointerId);
+    /// 先移除，使进行中的移除动画回调短路，避免重复释放。
+    final PointerData? pointerData = _pointerData.remove(pointerId);
+    _removingPointers.remove(pointerId);
+    if (pointerData == null) return;
+    _disposePointerData(pointerData);
   }
 
   /// Dispose all pointers
   /// |
   /// dispose 所有指针
   void dispose() {
-    final pointerData = List<MapEntry<int, PointerData>>.from(
-      _pointerData.entries,
-    );
-    for (final MapEntry<int, PointerData> data in pointerData) {
-      disposePointer(data.value.pointerId);
+    if (_isDisposed) return;
+    _isDisposed = true;
+    for (final int pointerId in _pointerData.keys.toList()) {
+      disposePointer(pointerId);
     }
+  }
+
+  /// Release the resources held by a [PointerData]
+  ///
+  /// ------
+  ///
+  /// 释放 [PointerData] 持有的资源
+  void _disposePointerData(PointerData pointerData) {
+    pointerData.animationController.dispose();
+    pointerData.positionState.dispose();
+    pointerData.pointerOverlayEntry
+      ?..remove()
+      ..dispose();
   }
 }

@@ -1,6 +1,6 @@
 name: show_touches
 description: "Show finger touch effects for Flutter, with support for multiple fingers, controllers, custom widgets, and animations."
-version: 0.0.1
+version: 0.1.0
 homepage: https://github.com/AmosHuKe/show_touches
 repository: https://github.com/AmosHuKe/show_touches
 issue_tracker: https://github.com/AmosHuKe/show_touches/issues
@@ -22,7 +22,3 @@ topics:
   - widget
   - pointer
   - touch
-
-screenshots:
-  - description: 'Example Preview GIF'
-    path: README/preview1.gif
