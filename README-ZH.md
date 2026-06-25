@@ -152,24 +152,21 @@ ShowTouches(
     Offset position,
     Animation<double> animation,
   ) {
-    final Animation<double> scaleAnimation = Tween<double>(
-      begin: 2.0,
-      end: 1.0,
-    ).animate(animation);
-
+    const double size = 60.0;
     return Positioned(
-      left: position.dx - 30.0,
-      top: position.dy - 30.0,
+      left: position.dx - size / 2,
+      top: position.dy - size / 2,
       child: IgnorePointer(
-        ignoring: true,
-        child: ScaleTransition(
-          scale: scaleAnimation,
-          child: FadeTransition(
-            opacity: animation,
-            child: Container(
-              width: 60,
-              height: 60,
-              color: Colors.black,
+        child: RepaintBoundary(
+          child: ScaleTransition(
+            scale: animation.drive(Tween<double>(begin: 2.0, end: 1.0)),
+            child: FadeTransition(
+              opacity: animation,
+              child: Container(
+                width: size,
+                height: size,
+                color: Colors.black,
+              ),
             ),
           ),
         ),
